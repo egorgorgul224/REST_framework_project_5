@@ -2,8 +2,8 @@ from rest_framework import generics
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from users.models import User
-from users.permissions import IsAccountOwner, IsModerator
-from users.serializers import RegisterUserSerializer, UserSerializer
+from users.permissions import IsAccountOwner
+from users.serializers import RegisterUserSerializer, UserMinInfoSerializer, UserSerializer
 
 
 class UserCreateAPIView(generics.CreateAPIView):
@@ -41,8 +41,17 @@ class UserDestroyAPIView(generics.DestroyAPIView):
 
 
 class UserListAPIView(generics.ListAPIView):
-    """Класс generics модели User для вывода списка пользователей."""
+    """Класс generics модели User для вывода списка пользователей(всех, кроме администраторов)."""
 
     serializer_class = UserSerializer
-    queryset = User.objects.all()
+    queryset = User.objects.filter(is_staff=False)
     permission_classes = [IsAuthenticated, IsAccountOwner]
+
+    def get_serializer_class(self):
+        """Метод для вывода необходимого сериализатора. Если пользователь 'staff' - выводится вся информация через
+        UserSerializer, иначе только часть информации через UserMinInfoSerializer."""
+
+        user = self.request.user
+        if user.is_staff:
+            return UserSerializer
+        return UserMinInfoSerializer

@@ -11,6 +11,15 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ["email", "first_name", "last_name", "phone", "city"]
 
 
+class UserMinInfoSerializer(serializers.ModelSerializer):
+    """Сериализация модели User для просмотра минимальной информации о пользователе, если пользователь не является
+    админом. Предоставлен доступ к полям: email, first_name, city, date_joined."""
+
+    class Meta:
+        model = User
+        fields = ["email", "first_name", "city", "date_joined"]
+
+
 class RegisterUserSerializer(serializers.ModelSerializer):
     """Сериализация модели User для регистрации/создания пользователя. Предоставлен доступ к полям: email, password."""
 
