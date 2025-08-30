@@ -13,7 +13,6 @@
    - [Приложение Habits](#habits_app)
      - [Модели](#habits_models) 
      - [Контроллеры и ссылки](#habits_controllers)
-     - [Вспомогательные функции](#habits_services)
      - [Сериализация](#habits_serialize)
      - [Задачи](#habits_tasks)
      - [Пагинаторы](#habits_paginators)
@@ -68,12 +67,15 @@ poetry install
 ├── config
 │     ├── asgi.py, settings.py, urls.py, wsgi.py необходимые модули для работы приложения
 ├── habits - приложение на django
-│ ├── management
-│     ├── commands - папка с командами
-│         ├── add_groups - команда для загрузки групп доступа в базу данных
 │ ├── migrations - папка с миграциями
 │ ├── admin.py, apps.py, models.py, paginators.py, serializers.py, tests.py, urls.py, validators.py, views.py,
  tasks.py, services.py - модули для работы приложения
+├── static - папка со стилями и фото
+│ ├── css
+│     ├── bootstrap.min.css
+│ ├── images
+│ ├── js
+│     ├── bootstrap.bundle.min.js
 ├── users - приложение на django
 │ ├── management
 │     ├── commands - папка с командами
@@ -103,60 +105,67 @@ poetry install
 
 ## Приложение Habits <a id="habits_app"></a>
 
-Приложение **habits** создано для ведения для ведения привычек.
+Приложение **habits** создано для создания/редактирования/удаления и ведения привычек.
 
 Ниже будут описаны модели, контроллеры + ссылки, сериализации.
 
 ### Модели<a id="habits_models"></a>
 
 В приложении созданы следующие модели:
-- Habit - приложение с привычками. Содержит поля .
+- Habit - приложение с привычками. Содержит поля place, time, action, is_nice_habit, related_habit, periodicity,
+reward, execute_time, is_published, owner.
 
 ### Контроллеры и ссылки<a id="habits_controllers"></a>
 
-1. Контроллер **** для .
+1. Контроллеры модели **Habit**.
+   - Контроллер HabitCreateAPIView для создания привычки.
+   - Контроллер HabitListAPIView для вывода списка своих привычек.
+   - Контроллер HabitPublishedListAPIView для вывода списка опубликованных в общий доступ привычек.
+   - Контроллер HabitRetrieveAPIView для вывода информации о привычке.
+   - Контроллер HabitUpdateAPIView для обновления информации о привычке.
+   - Контроллер HabitDestroyAPIView для удаления привычки.
 
 ```
-Ссылка для контроллера: адрес//
+Ссылка для контроллера HabitListAPIView: адрес/habits/
+Ссылка для контроллера HabitPublishedListAPIView: адрес/published/habits/
+Ссылка для контроллера HabitCreateAPIView: адрес/habit/create/
+Ссылка для контроллера HabitRetrieveAPIView: адрес/habit/id_урока/detail/
+Ссылка для контроллера HabitDestroyAPIView: адрес/habit/id_урока/delete/
+Ссылка для контроллера HabitUpdateAPIView: адрес/habit/id_урока/update/
 ```
-
-### Вспомогательные функции Services<a id="habits_services"></a>
-
-В приложении реализованы следующие вспомогательные функции:
-1. **** - функция для .
 
 ### Сериализация<a id="habits_serialize"></a>
 
 Реализованы следующие сериализации:
-1. Serializer - сериализатор для .
+1. **HabitSerializer** - сериализация модели Habit. Предоставлен доступ ко всем полям, кроме owner.
+2. **HabitInfoSerializer** - сериализация модели Habit. Предоставлен доступ к полям place, time, action, periodicity,
+reward, execute_time. Используется в контроллере для отображения привычек в общем доступе.
 
 ### Задачи<a id="habits_tasks"></a>
 
 В приложении реализованы следующие задачи:
-1. **u** - задача для .
+1. **** - задача для .
 
 ! Для задачи **** в настройках установлено срабатывание каждые 2 минуты для проверки работы задачи.
 
 ### Пагинаторы<a id="habits_paginators"></a>
 
 Реализована следующие пагинаторы:
-1. **** - пагинатор для .
+1. **HabitListPaginator** - пагинатор для вывода списка привычек. Выводит 5 элементов на страницу.
 
 ### Валидаторы<a id="habits_validators"></a>
 
 Реализованы следующие валидаторы:
-1. **** - класс-валидатор для .
+1. **NiceHabitValidator** - класс-валидатор для определения, что привычка является приятной. У такой привычки не может
+быть указана связанная привычка и/или вознаграждение.
+2. **RelatedHabitOrRewardValidator** - класс-валидатор для определения, что для полезной привычки можно указать
+связанную приятную привычку или вознаграждение.
+3. **IsNiceRelatedHabitValidator** - класс-валидатор для определения, что связанная привычка является приятной.
+Запрещено для полезной привычки выбирать полезную привычку.
 
 ### Кастомные команды<a id="habits_commands"></a>
 
 В приложении реализованы следующие команды:
-
-1. add_groups - команда для добавления групп в базу данных.
-
-Команда в консоль: 
-```
-python manage.py add_groups
-```
 
 ---
 

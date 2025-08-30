@@ -3,7 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from habits.models import Habit
 from habits.paginators import HabitListPaginator
-from habits.serializers import HabitSerializer
+from habits.serializers import HabitInfoSerializer, HabitSerializer
 from users.permissions import IsHabitOwner
 
 
@@ -16,7 +16,7 @@ class HabitCreateAPIView(generics.CreateAPIView):
     ]
 
     def perform_create(self, serializer):
-        """Метод добавляет в поле owner пользователя, который создает урок."""
+        """Метод добавляет в поле owner пользователя, который создает привычку."""
 
         habit = serializer.save()
         habit.owner = self.request.user
@@ -26,9 +26,34 @@ class HabitCreateAPIView(generics.CreateAPIView):
 class HabitListAPIView(generics.ListAPIView):
     """Класс generics модели Habit для вывода списка привычек."""
 
-    serializer_class = HabitSerializer
-    queryset = Habit.objects.all()
+    serializer_class = HabitInfoSerializer
     pagination_class = HabitListPaginator
+
+    def get_queryset(self):
+        """Функция для получения списка привычек. Если админ - то все привычки, пользователь - только свои."""
+
+        user = self.request.user
+        if user.is_superuser:
+            return Habit.objects.all()
+        else:
+            return Habit.objects.filter(owner=self.request.user.id)
+
+
+class HabitPublishedListAPIView(generics.ListAPIView):
+    """Класс generics модели Habit для вывода списка привычек, опубликованных в общий доступ."""
+
+    serializer_class = HabitInfoSerializer
+    pagination_class = HabitListPaginator
+
+    def get_queryset(self):
+        """Функция для получения списка привычек. Если админ - то все привычки, пользователь - только опубликованные в
+        общий доступ."""
+
+        user = self.request.user
+        if user.is_superuser:
+            return Habit.objects.all()
+        else:
+            return Habit.objects.filter(is_published=True)
 
 
 class HabitRetrieveAPIView(generics.RetrieveAPIView):

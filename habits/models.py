@@ -17,7 +17,7 @@ class Habit(models.Model):
     time = models.TimeField(verbose_name="Время выполнения привычки", help_text="Укажите время выполнения привычки")
     action = models.TextField(verbose_name="Действие, которое необходимо сделать", help_text="Введите действие")
     is_nice_habit = models.BooleanField(default=False, verbose_name="Выбрать, если привычка приятная")
-    related_habit = models.ForeignKey("self", on_delete=models.SET_NULL, null=True, blank=True)
+    related_habit = models.ForeignKey("self", on_delete=models.SET_NULL, related_name="habits", null=True, blank=True)
     periodicity = models.PositiveIntegerField(
         default=1,
         verbose_name="Периодичность выполнения",
