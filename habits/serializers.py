@@ -5,7 +5,7 @@ from habits.validators import IsNiceRelatedHabitValidator, NiceHabitValidator, R
 
 
 class HabitSerializer(serializers.ModelSerializer):
-    """Сериализация модели Habit. Предоставлен доступ ко всем полям, кроме owner."""
+    """Сериализация модели Habit. Предоставлен доступ ко всем полям, кроме owner и day_counter."""
 
     validators = [
         NiceHabitValidator(is_nice_habit="is_nice_habit", related_habit="related_habit", reward="reward"),
@@ -15,7 +15,7 @@ class HabitSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Habit
-        exclude = ["owner"]
+        exclude = ["owner", "day_counter"]
 
 
 class HabitInfoSerializer(serializers.ModelSerializer):

@@ -16,10 +16,12 @@ class HabitCreateAPIView(generics.CreateAPIView):
     ]
 
     def perform_create(self, serializer):
-        """Метод добавляет в поле owner пользователя, который создает привычку."""
+        """Метод добавляет в поле owner пользователя, который создает привычку. В поле day_counter передается значение
+        поля периодичности."""
 
         habit = serializer.save()
         habit.owner = self.request.user
+        habit.day_counter = habit.periodicity
         habit.save()
 
 
@@ -70,6 +72,13 @@ class HabitUpdateAPIView(generics.UpdateAPIView):
     serializer_class = HabitSerializer
     queryset = Habit.objects.all()
     permission_classes = [IsAuthenticated, IsHabitOwner]
+
+    def perform_update(self, serializer):
+        """Метод обновляет поле day_counter значение поля периодичности."""
+
+        habit = serializer.save()
+        habit.day_counter = habit.periodicity
+        habit.save()
 
 
 class HabitDestroyAPIView(generics.DestroyAPIView):

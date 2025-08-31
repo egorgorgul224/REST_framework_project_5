@@ -6,8 +6,8 @@ from config import settings
 
 # Create your models here.
 class Habit(models.Model):
-    """Модель привычка. Содержит поля place, time, action, is_nice_habit, related_habit, periodicity, reward,
-    execute_time, is_published, owner."""
+    """Модель привычка. Содержит поля place, time, action, is_nice_habit(по умолчанию false), related_habit,
+    periodicity, reward, execute_time, is_published(по умолчанию false), owner, day_counter."""
 
     place = models.CharField(
         max_length=50,
@@ -40,6 +40,7 @@ class Habit(models.Model):
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name="habits", blank=True, null=True
     )
+    day_counter = models.PositiveIntegerField(default=1, verbose_name="Счетчик периодичности")
 
     def __str__(self):
         return f"Привычка: действие - {self.action}, время - {self.time}, место - {self.place}"
@@ -47,4 +48,4 @@ class Habit(models.Model):
     class Meta:
         verbose_name = "Привычка"
         verbose_name_plural = "Привычки"
-        ordering = ["id"]
+        ordering = ["time"]

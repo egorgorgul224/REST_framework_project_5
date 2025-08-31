@@ -154,10 +154,13 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 CORS_ALLOW_ALL_ORIGINS = False
 
+TELEGRAM_URL = os.getenv("TELEGRAM_URL")
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
+
 # timedelta 2 minutes to check functionality
-# CELERY_BEAT_SCHEDULE = {
-#     "check_users_activity": {
-#         "task": "materials.tasks.check_users_activity",
-#         "schedule": timedelta(minutes=2)
-#     },
-# }
+CELERY_BEAT_SCHEDULE = {
+    "send_habit_message_to_telegram": {
+        "task": "habits.tasks.send_habit_message_to_telegram",
+        "schedule": timedelta(minutes=1)
+    },
+}

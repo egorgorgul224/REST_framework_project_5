@@ -13,6 +13,7 @@
    - [Приложение Habits](#habits_app)
      - [Модели](#habits_models) 
      - [Контроллеры и ссылки](#habits_controllers)
+     - [Вспомогательные функции](#habits_services)
      - [Сериализация](#habits_serialize)
      - [Задачи](#habits_tasks)
      - [Пагинаторы](#habits_paginators)
@@ -113,7 +114,7 @@ poetry install
 
 В приложении созданы следующие модели:
 - Habit - приложение с привычками. Содержит поля place, time, action, is_nice_habit, related_habit, periodicity,
-reward, execute_time, is_published, owner.
+reward, execute_time, is_published, owner, day_counter.
 
 ### Контроллеры и ссылки<a id="habits_controllers"></a>
 
@@ -134,6 +135,11 @@ reward, execute_time, is_published, owner.
 Ссылка для контроллера HabitUpdateAPIView: адрес/habit/id_урока/update/
 ```
 
+### Вспомогательные функции Services<a id="habits_services"></a>
+
+В приложении реализованы следующие вспомогательные функции:
+1. **send_telegram_message** - функция отправки сообщения о выполнении привычки в чат телеграм.
+
 ### Сериализация<a id="habits_serialize"></a>
 
 Реализованы следующие сериализации:
@@ -144,9 +150,12 @@ reward, execute_time. Используется в контроллере для 
 ### Задачи<a id="habits_tasks"></a>
 
 В приложении реализованы следующие задачи:
-1. **** - задача для .
+1. **send_habit_message_to_telegram** - задача для получения привычек по времени и отправки оповещений по привычкам в
+телеграм. Задача вызывается каждый час и оправляет привычки в период этого часа(например задача запускается в 11:00,
+привычки от 11:00 до 11:59).
 
-! Для задачи **** в настройках установлено срабатывание каждые 2 минуты для проверки работы задачи.
+! Для задачи **send_habit_message_to_telegram** в настройках установлено срабатывание каждую 1 минуты для проверки
+работы задачи. По логике задача вызывается 1 раз каждый час.
 
 ### Пагинаторы<a id="habits_paginators"></a>
 
