@@ -20,7 +20,10 @@ def send_habit_message_to_telegram():
         habit.day_counter -= 1
         if not habit.day_counter:
             if habit.owner.tg_chat_id:
-                message = f"Необходимо выполнить привычку: {habit.action}, время: {habit.time}, место: {habit.place}. Время на выполнение привычки: {habit.execute_time} сек."
+                if habit.related_habit:
+                    message = f"Необходимо выполнить привычку: {habit.action}, время: {habit.time}, место: {habit.place}. Время на выполнение привычки: {habit.execute_time} сек. Приятная привычка: {habit.related_habit.action}"
+                else:
+                    message = f"Необходимо выполнить привычку: {habit.action}, время: {habit.time}, место: {habit.place}. Время на выполнение привычки: {habit.execute_time} сек."
                 send_telegram_message(message=message, chat_id=habit.owner.tg_chat_id)
                 habit.day_counter = habit.periodicity
                 habit.save(update_fields=["day_counter"])

@@ -30,4 +30,4 @@ class HabitInfoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Habit
-        fields = ["place", "time", "action", "periodicity", "reward", "execute_time"]
+        fields = ["place", "time", "action", "related_habit", "periodicity", "reward", "execute_time"]
