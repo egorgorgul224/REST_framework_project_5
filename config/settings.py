@@ -157,12 +157,11 @@ CORS_ALLOW_ALL_ORIGINS = False
 TELEGRAM_URL = os.getenv("TELEGRAM_URL")
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 
-# timedelta 2 minutes to check functionality
+# timedelta 1 minutes to check functionality
+# "schedule": crontab(minute=0, hour='*/1')
 CELERY_BEAT_SCHEDULE = {
     "send_habit_message_to_telegram": {
         "task": "habits.tasks.send_habit_message_to_telegram",
         "schedule": timedelta(minutes=1)
     },
 }
-
-# "schedule": crontab(minute=0, hour='*/1')
