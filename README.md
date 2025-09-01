@@ -212,7 +212,7 @@ reward, execute_time. Используется в контроллере для 
 
 Реализованы следующие сериализации:
 1. **UserSerializer** - сериализатор для модели User. В Meta класс предоставлен доступ к полям: first_name, last_name,
-city, phone .
+city, phone, tg_chat_id.
 2. **UserMinInfoSerializer** - сериализатор для просмотра минимальной информации о пользователе, если пользователь не
 является админом. Предоставлен доступ к полям: email, first_name, city, date_joined.
 3. **RegisterUserSerializer** - сериализатор для контроллера UserCreateAPIView. Используется для регистрации/создания
