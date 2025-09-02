@@ -216,7 +216,7 @@ city, phone, tg_chat_id.
 2. **UserMinInfoSerializer** - сериализатор для просмотра минимальной информации о пользователе, если пользователь не
 является админом. Предоставлен доступ к полям: email, first_name, city, date_joined.
 3. **RegisterUserSerializer** - сериализатор для контроллера UserCreateAPIView. Используется для регистрации/создания
-пользователя. Предоставлен доступ к полям: email, password.
+пользователя. Предоставлен доступ к полям: email.
 
 ### Классы разрешений<a id="users_permissions"></a>
 

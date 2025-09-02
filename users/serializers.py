@@ -21,8 +21,9 @@ class UserMinInfoSerializer(serializers.ModelSerializer):
 
 
 class RegisterUserSerializer(serializers.ModelSerializer):
-    """Сериализация модели User для регистрации/создания пользователя. Предоставлен доступ к полям: email, password."""
+    """Сериализация модели User для регистрации/создания пользователя. Предоставлен доступ к полям: email."""
 
     class Meta:
         model = User
         fields = ["email", "password"]
+        extra_kwargs = {"password": {"write_only": True}}
