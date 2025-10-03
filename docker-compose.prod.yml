@@ -16,7 +16,7 @@ services:
 
   nginx:
     build:
-      context: ./nginx
+      context: ./habits/project5/nginx
     ports:
       - "80:80"
     volumes:
