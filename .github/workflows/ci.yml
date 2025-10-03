@@ -89,9 +89,9 @@ jobs:
           scp -o StrictHostKeyChecking=no docker-compose.prod.yml .env ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:habits/project5
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "
             cd habits/project5 && \
-            docker system prune -af && \
-            docker volume prune -f && \
-            docker-compose -f docker-compose.prod.yml down && \
-            docker-compose -f docker-compose.prod.yml pull && \
-            docker-compose -f docker-compose.prod.yml up -d --build --remove-orphans
+            sudo docker system prune -af && \
+            sudo docker volume prune -f && \
+            sudo docker-compose -f docker-compose.prod.yml down && \
+            sudo docker-compose -f docker-compose.prod.yml pull && \
+            sudo docker-compose -f docker-compose.prod.yml up -d --build --remove-orphans
           "
