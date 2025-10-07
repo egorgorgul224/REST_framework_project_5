@@ -96,18 +96,22 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
 
+      - name: Copy docker-compose.prod.yml to server
+        run: |
+          scp -o StrictHostKeyChecking=no docker-compose.prod.yml ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:~/docker-compose.prod.yml
+
+      - name: Copy nginx.conf to server
+        run: |
+          scp -o StrictHostKeyChecking=no nginx/nginx.conf ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:~/nginx.conf
+
       - name: Deploy to server
         run: |
-          scp -o StrictHostKeyChecking=no docker-compose.prod.yml .env ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:habits/project5
-          scp -o StrictHostKeyChecking=no requirements.txt ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:habits/project5
-          scp -o StrictHostKeyChecking=no Dockerfile ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:habits/project5
-          scp -o StrictHostKeyChecking=no nginx/Dockerfile ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:~/Dockerfile
-          scp -o StrictHostKeyChecking=no nginx/nginx.conf ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:~/nginx.conf
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "
-            cd habits/project5 && \
-            sudo docker system prune -af && \
-            sudo docker volume prune -f && \
-            sudo docker compose -f docker-compose.prod.yml down && \
-            sudo docker compose -f docker-compose.prod.yml pull && \
-            sudo docker compose -f docker-compose.prod.yml up -d --build --remove-orphans
-          "
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << EOF
+          export DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}
+          export GITHUB_SHA=${{ github.sha }}
+          sudo docker system prune -af
+          sudo docker volume prune -f
+          sudo docker compose -f docker-compose.prod.yml down
+          sudo docker compose -f docker-compose.prod.yml pull
+          sudo docker compose -f docker-compose.prod.yml up -d --build --remove-orphans
+          EOF
