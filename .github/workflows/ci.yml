@@ -73,6 +73,12 @@ jobs:
       - name: Push Docker image to Docker Hub
         run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/rest_project_5:${{ github.sha }}
 
+      - name: Build Docker image for nginx
+        run: docker build -f nginx/Dockerfile -t ${{ secrets.DOCKER_HUB_USERNAME }}/mynginx:${{ github.sha }} ./nginx
+
+      - name: Push Docker image for nginx
+        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/mynginx:${{ github.sha }}
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
