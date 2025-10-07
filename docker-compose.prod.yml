@@ -1,29 +1,47 @@
 services:
   web:
-    build: .
-    command: bash -c "python manage.py collectstatic -c --noinput && python manage.py migrate && gunicorn config.wsgi:application --bind 0.0.0.0:8000"
+    image: ${DOCKER_HUB_USERNAME}/rest_project_5:${GITHUB_SHA}
+    command: gunicorn config.wsgi:application --bind 0.0.0.0:8000
     env_file:
       - .env
     volumes:
-      - .:/app
-      - static_files:/app/static
-      - media_volume:/app/media
+      - static_volume:/app/static
     ports:
       - "8000:8000"
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_started
+
+  migrate:
+    image: ${DOCKER_HUB_USERNAME}/rest_project_5:${GITHUB_SHA}
+    command: python manage.py migrate --noinput
+    restart: "no"
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+
+  static_collector:
+    image: ${DOCKER_HUB_USERNAME}/rest_project_5:${GITHUB_SHA}
+    command: python manage.py collectstatic --noinput
+    env_file:
+      - .env
+    volumes:
+      - static_volume:/app/staticfiles
 
   nginx:
-    build:
-      context: ./nginx
+    image: ${DOCKER_HUB_USERNAME}/rest_project_5:${GITHUB_SHA}
     ports:
       - "80:80"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - static_files:/app/static
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - static_volume:/app/static
     depends_on:
-      - web
+      web:
+        condition: service_started
 
   db:
     image: postgres:17
@@ -45,30 +63,49 @@ services:
     image: redis:6
     volumes:
       - redis_data:/data
+    healthcheck:
+      test: redis-cli ping
+      interval: 2s
+      timeout: 2s
+      retries: 5
 
   celery:
-    build: .
+    image: ${DOCKER_HUB_USERNAME}/rest_project_5:${GITHUB_SHA}
+    command: celery -A config  worker -l INFO
     env_file:
       - .env
-    command: bash -c "celery -A config  worker -l INFO"
     depends_on:
-      - db
-      - redis
-      - web
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_started
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: celery -A config inspect ping
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   celery_beat:
-    build: .
+    image: ${DOCKER_HUB_USERNAME}/rest_project_5:${GITHUB_SHA}
+    command: celery -A config beat -l INFO -S django
     env_file:
       - .env
-    command: bash -c "celery -A config beat -l INFO -S django"
     depends_on:
-      - db
-      - redis
-      - web
-      - celery
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_started
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: celery -A config inspect ping
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   postgres_data:
-  static_files:
+  static_volume:
   redis_data:
-  media_volume:
