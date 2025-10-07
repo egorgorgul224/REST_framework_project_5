@@ -2,8 +2,16 @@ services:
   web:
     image: ${DOCKER_HUB_USERNAME}/rest_project_5:${GITHUB_SHA}
     command: gunicorn config.wsgi:application --bind 0.0.0.0:8000
-    env_file:
-      - .env
+    environment:
+      SECRET_KEY: ${SECRET_KEY}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_HOST: db
+      TELEGRAM_URL: ${TELEGRAM_URL}
+      BOT_TELEGRAM_TOKEN: ${TELEGRAM_TOKEN}
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
     volumes:
       - static_volume:/app/static
     ports:
@@ -18,8 +26,12 @@ services:
     image: ${DOCKER_HUB_USERNAME}/rest_project_5:${GITHUB_SHA}
     command: python manage.py migrate --noinput
     restart: "no"
-    env_file:
-      - .env
+    environment:
+      SECRET_KEY: ${SECRET_KEY}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_HOST: db
     depends_on:
       db:
         condition: service_healthy
@@ -27,8 +39,8 @@ services:
   static_collector:
     image: ${DOCKER_HUB_USERNAME}/rest_project_5:${GITHUB_SHA}
     command: python manage.py collectstatic --noinput
-    env_file:
-      - .env
+    environment:
+      SECRET_KEY: ${SECRET_KEY}
     volumes:
       - static_volume:/app/staticfiles
 
@@ -45,8 +57,10 @@ services:
 
   db:
     image: postgres:17
-    env_file:
-      - .env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
@@ -72,8 +86,10 @@ services:
   celery:
     image: ${DOCKER_HUB_USERNAME}/rest_project_5:${GITHUB_SHA}
     command: celery -A config  worker -l INFO
-    env_file:
-      - .env
+    environment:
+      SECRET_KEY: ${SECRET_KEY}
+      REDIS_HOST: redis
+      POSTGRES_HOST: db
     depends_on:
       db:
         condition: service_healthy
@@ -90,8 +106,12 @@ services:
   celery_beat:
     image: ${DOCKER_HUB_USERNAME}/rest_project_5:${GITHUB_SHA}
     command: celery -A config beat -l INFO -S django
-    env_file:
-      - .env
+    environment:
+      SECRET_KEY: ${SECRET_KEY}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_HOST: db
     depends_on:
       db:
         condition: service_healthy
