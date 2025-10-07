@@ -101,8 +101,8 @@ jobs:
           scp -o StrictHostKeyChecking=no docker-compose.prod.yml .env ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:habits/project5
           scp -o StrictHostKeyChecking=no requirements.txt ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:habits/project5
           scp -o StrictHostKeyChecking=no Dockerfile ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:habits/project5
-          scp -o StrictHostKeyChecking=no nginx/Dockerfile ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:habits/project5/nginx
-          scp -o StrictHostKeyChecking=no nginx/nginx.conf ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:habits/project5/nginx
+          scp -o StrictHostKeyChecking=no nginx/Dockerfile ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:~/Dockerfile
+          scp -o StrictHostKeyChecking=no nginx/nginx.conf ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:~/nginx.conf
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "
             cd habits/project5 && \
             sudo docker system prune -af && \
