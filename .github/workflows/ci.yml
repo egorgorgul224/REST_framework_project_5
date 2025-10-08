@@ -60,10 +60,6 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v3
 
-      - name: Create .env file
-        run: |
-          echo "${{ secrets.ENV }}" | sed '/^#/d' > .env
-
       - name: Log in to Docker Hub
         run: echo ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }} | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
 
@@ -81,10 +77,6 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v3
 
-      - name: Create .env file
-        run: |
-          echo "${{ secrets.ENV }}" | sed '/^#/d' > .env
-
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.9.0
         with:
@@ -93,10 +85,8 @@ jobs:
       - name: Deploy to server
         run: |
           scp -o StrictHostKeyChecking=no docker-compose.prod.yml .env ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:habits/project5
-          scp -o StrictHostKeyChecking=no requirements.txt ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:habits/project5
-          scp -o StrictHostKeyChecking=no Dockerfile ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:habits/project5
-          scp -o StrictHostKeyChecking=no nginx/Dockerfile ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:~/Dockerfile
-          scp -o StrictHostKeyChecking=no nginx/nginx.conf ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:~/nginx.conf
+          scp -o StrictHostKeyChecking=no nginx/Dockerfile ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:habits/project5/nginx
+          scp -o StrictHostKeyChecking=no nginx/nginx.conf ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:habits/project5/nginx
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "
             cd habits/project5 && \
             sudo docker system prune -af && \
