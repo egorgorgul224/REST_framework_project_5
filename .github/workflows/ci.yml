@@ -88,6 +88,7 @@ jobs:
           scp -o StrictHostKeyChecking=no nginx/Dockerfile ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:habits/project5/nginx
           scp -o StrictHostKeyChecking=no nginx/nginx.conf ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:habits/project5/nginx
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "
+            export GITHASH=${{ github.sha }}
             cd habits/project5 && \
             sudo docker system prune -af && \
             sudo docker volume prune -f && \
