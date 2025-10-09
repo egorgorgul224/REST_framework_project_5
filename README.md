@@ -27,7 +27,9 @@
      - [Кастомные команды](#users_commands)
 5. [Тестирование](#tests)
 6. [Запуск и тестирование проекта, документация](#launch)
-7. [Лицензия](#license)
+7. [Запуск и тестирование с помощью Docker Compose](#docker)
+8. [Запуск и тестирование с помощью Yandex Cloud](#ya_cloud)
+9. [Лицензия](#license)
 
 ---
 
@@ -295,6 +297,143 @@ celery -A config worker -l INFO -P eventlet - для Windows
 4 пункта и запуском сервера:
 ```
 celery -A config beat -l INFO -S django
+```
+
+---
+
+## Запуск и тестирование с помощью Docker Compose<a id="docker"></a>
+
+С помощью Docker Compose можно запустить все необходимые для проекта сервисы в одной оболочке(веб-приложение, базу
+данных(PostgreSQL), Redis, Celery и Celery Beat).
+
+Запуск:
+1. Установите Docker.
+2. Введите команду для создания и запуска Docker Compose в фоновом режиме.
+```
+docker-compose up -d --build
+```
+3. Проверить работоспособность Docker Compose можно:
+- проверить сервер по адресу:
+```
+http://localhost:8000/
+или
+http://127.0.0.1:8000/
+```
+- для добавления админа и входа в базу данных используйте команды:
+```
+создание админа:
+docker-compose run web python manage.py createadmin
+
+входа в базу данных:
+docker exec -it django_rest_homework-db-1  psql -U postgres materials
+
+проверка всех таблиц в базе данных:
+\dt
+
+пример для проверки пользователей:
+SELECT * FROM users_user;
+```
+- ввести в терминал команду, запущенные команды будут иметь status "Up":
+```
+docker-compose ps
+```
+- ввести в терминал команду для просмотра логов по каждому сервису:
+```
+docker-compose logs
+```
+4. Для остановки и/или удаления используйте команду:
+```
+docker-compose stop
+
+или с удалением контейнера:
+docker-compose down
+```
+
+---
+
+## Запуск и тестирование с помощью Yandex Cloud<a id="ya_cloud"></a>
+
+С помощью Yandex Cloud можно запустить проект на удаленном сервере.
+
+Для успешного развертывания на сервере необходимо:
+   - Удаленный сервер с установленным Docker
+   - Учетная запись Docker Hub
+   - Доступ к репозиторию на GitHub
+
+Настройка удаленного сервера:
+1. Обновление системы:
+```
+sudo apt update
+sudo apt upgrade
+```
+
+2. Установка docker и docker-compose:
+```
+sudo apt-get install ca-certificates curl
+
+sudo install -m 0755 -d /etc/apt/keyrings
+
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+  
+sudo apt-get update
+
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+```
+
+3. Активация файрвола:
+```
+# проверка статуса файрвола
+sudo ufw status
+
+# сли файрвол отключен, активируйте его
+sudo ufw enable
+```
+
+4. Открытие необходимых портов:
+```
+# http port:
+sudo ufw allow 80/tcp
+	
+# https port:
+sudo ufw allow 443/tcp
+	
+# ssh port:
+sudo ufw allow 22/tcp
+```
+
+Клонирование проекта на сервер и запуск:
+1. Зайти на удаленный сервер:
+```
+ssh SSH_USER@$SERVER_IP
+```
+
+2. Клонируйте репозиторий:
+
+```
+git clone https://github.com/username/project-x.git
+```
+
+3. Заполнить файл env своими данными:
+```
+sudo nano .env
+```
+4. Запустить контейнер на сервере:
+```
+sudo docker compose -f docker-compose.prod.yml up -d --build --remove-orphans
+```
+
+Проверить работоспособность:
+1.
+```
+http://158.160.1.109/
+http://158.160.1.109/swagger/
 ```
 
 ---
